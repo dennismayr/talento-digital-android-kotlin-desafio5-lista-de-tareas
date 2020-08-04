@@ -29,7 +29,7 @@ Ud. deberá completar lo siguiente:
     c. Agregar configuración al _Manifest_.
 
 
-2. Crear todos los componentes de Room para persistir la lista y poder interactuar con los datos guardados.
+2. Crear todos los componentes de _Room_ para persistir la lista y poder interactuar con los datos guardados.
 
     a. La lista sólo muestra texto, no sobrecomplique el modelamiento de datos. Recuerde implementar todos los componentes de _Room_, esto entrega.
 

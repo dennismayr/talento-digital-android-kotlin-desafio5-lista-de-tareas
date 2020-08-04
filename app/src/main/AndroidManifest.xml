@@ -3,13 +3,17 @@
     package="dev.dmayr.a03_02_06_desafio_aplicacion_de_tareas">
 
     <application
+        android:name=".lista_tareas.ListaTareas"
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name="dev.dmayr.a03_02_06_desafio_aplicacion_de_tareas.MainActivity">
+        <activity
+            android:name="dev.dmayr.a03_02_06_desafio_aplicacion_de_tareas.MainActivity"
+            android:fullBackupContent="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
