@@ -50,6 +50,34 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
       .setNegativeButton("Cerrar") { dialog: DialogInterface, _: Int -> dialog.dismiss() }
       .setPositiveButton("Editar") { _: DialogInterface, _: Int ->
         //generar código para editar/actualizar la tarea
+        if (taskText.text!!.isNotEmpty()) {
+          dao.modificarTarea(updateEntity(taskText.text.toString()))
+        }
+        //
+      }
+    dialogBuilder.create().show()
+  }
+
+  private fun addTask() {
+    val dialogView = layoutInflater.inflate(R.layout.add_task, null)
+    val taskText = dialogView.task_input
+    val dialogBuilder = AlertDialog
+      .Builder(this)
+      .setTitle("Agrega una Tarea")
+      .setView(dialogView)
+      .setNegativeButton("Cerrar") { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+      .setPositiveButton("Agregar") { dialog: DialogInterface, _: Int ->
+        if (taskText.text?.isNotEmpty()!!) {
+          //Completar para agregar una tarea a la base de datos
+          dao.agregarTarea(createEntity(taskText.text.toString()))
+          val newItems =
+            createEntityListFromDatabase(dao.listarTareasTodas())
+          runOnUiThread {
+            adapter.updateData(newItems)
+            dialog.dismiss()
+          }
+          //
+        }
       }
     dialogBuilder.create().show()
   }
@@ -99,36 +127,6 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     list.adapter = adapter
   }
 
-  private fun updateEntity(taskItem: TaskUIDataHolder, newText: String) {
-    //completar método para actualizar una tarea en la base de datos
-
-    //
-  }
-
-  private fun addTask() {
-    val dialogView = layoutInflater.inflate(R.layout.add_task, null)
-    val taskText = dialogView.task_input
-    val dialogBuilder = AlertDialog
-      .Builder(this)
-      .setTitle("Agrega una Tarea")
-      .setView(dialogView)
-      .setNegativeButton("Cerrar") { dialog: DialogInterface, _: Int -> dialog.dismiss() }
-      .setPositiveButton("Agregar") { dialog: DialogInterface, _: Int ->
-        if (taskText.text?.isNotEmpty()!!) {
-          //Completar para agregar una tarea a la base de datos
-          dao.agregarTarea(createEntity(taskText.text.toString()))
-          val newItems =
-            createEntityListFromDatabase(dao.listarTareasTodas())
-          runOnUiThread {
-            adapter.updateData(newItems)
-            dialog.dismiss()
-          }
-          //
-        }
-      }
-    dialogBuilder.create().show()
-  }
-
   private fun removeAll() {
     val dialog = AlertDialog
       .Builder(this)
@@ -147,6 +145,21 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
         }
       }
     dialog.show()
+  }
+
+  private fun updateEntity(taskItem: TaskUIDataHolder, newText: String): List<DatabaseEntity> {
+    //completar método para actualizar una tarea en la base de datos
+    val updateEntity: MutableList<DatabaseEntity> = mutableListOf()
+    if (updateEntity.isNotEmpty()) {
+      updateEntity.remove(
+        DatabaseEntity(
+          id = taskItem.id,
+          tarea = newText
+        )
+      )
+    } else updateEntity.add(DatabaseEntity(id = taskItem.id, tarea = newText))
+    return updateEntity
+    //
   }
 
   private fun createEntity(text: String): List<DatabaseEntity> {
