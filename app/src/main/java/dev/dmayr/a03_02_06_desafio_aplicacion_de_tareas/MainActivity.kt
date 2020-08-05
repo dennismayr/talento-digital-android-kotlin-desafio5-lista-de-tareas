@@ -11,7 +11,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
+import dev.dmayr.a03_02_06_desafio_aplicacion_de_tareas.orm.DatabaseDAO
 import dev.dmayr.a03_02_06_desafio_aplicacion_de_tareas.orm.DatabaseEntity
+import dev.dmayr.a03_02_06_desafio_aplicacion_de_tareas.orm.TareasDatabase
 import dev.dmayr.a03_02_06_desafio_aplicacion_de_tareas.task.OnItemClickListener
 import dev.dmayr.a03_02_06_desafio_aplicacion_de_tareas.task.TaskListAdapter
 import dev.dmayr.a03_02_06_desafio_aplicacion_de_tareas.task.TaskUIDataHolder
@@ -28,7 +30,11 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
 
   private lateinit var list: RecyclerView
   private lateinit var adapter: TaskListAdapter
+
   // crear las variables para utilizar la base de datos
+  private lateinit var dataBase: TareasDatabase
+  private lateinit var dao: DatabaseDAO
+  //
 
   private val job: CompletableJob = Job()
   private val coroutineContextElement: CoroutineScope = CoroutineScope(Dispatchers.Main + job)
@@ -55,6 +61,8 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     setSupportActionBar(toolbar)
     setUpViews()
     //inicializar lo necesario para usar la base de datos
+
+    //
   }
 
   override fun onResume() {
@@ -123,6 +131,14 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
       .setNegativeButton("Cerrar") { dialog: DialogInterface, _: Int -> dialog.dismiss() }
       .setPositiveButton("Aceptar") { dialog: DialogInterface, _: Int ->
         //Código para eliminar las tareas de la base de datos
+        coroutineContextElement.launch {
+          withContext(Dispatchers.IO) {
+
+            dao.deleteAll()
+            adapter.updateData(emptyList())
+
+          }
+        }
       }
     dialog.show()
   }
