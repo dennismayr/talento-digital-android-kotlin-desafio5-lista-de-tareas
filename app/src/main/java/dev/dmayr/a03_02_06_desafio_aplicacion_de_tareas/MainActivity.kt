@@ -116,7 +116,13 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
       .setPositiveButton("Agregar") { dialog: DialogInterface, _: Int ->
         if (taskText.text?.isNotEmpty()!!) {
           //Completar para agregar una tarea a la base de datos
-
+          dao.agregarTarea(createEntity(taskText.text.toString()))
+          val newItems =
+            createEntityListFromDatabase(dao.listarTareasTodas())
+          runOnUiThread {
+            adapter.updateData(newItems)
+            dialog.dismiss()
+          }
           //
         }
       }
