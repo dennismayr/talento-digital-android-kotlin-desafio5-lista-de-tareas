@@ -22,18 +22,18 @@ Ud. deberá completar lo siguiente:
 
 1. Debe agregar todas las dependencias y configuraciones necesarias para integrar _Room_ en el proyecto.
 
-    a. Agregar dependencias y configuraciones a el archivo _gradle_ correspondiente.
+    a. Agregar dependencias y configuraciones al archivo _gradle_ correspondiente.
  
     b. Crear las clases necesarias para inicializar la base de datos.
  
     c. Agregar configuración al _Manifest_.
 
 
-2. Crear todos los componentes de Room para persistir la lista y poder interactuar con los datos guardados.
+2. Crear todos los componentes de _Room_ para persistir la lista y poder interactuar con los datos guardados.
 
     a. La lista sólo muestra texto, no sobrecomplique el modelamiento de datos. Recuerde implementar todos los componentes de _Room_, esto entrega.
 
-3. Completar los siguientes métodos y mostrar que la aplicación persiste los datos entre diferentes corridas de la misma.
+3. Completar los siguientes métodos y mostrar que la aplicación persiste los datos entre diferentes corridas de la misma:
 
     a. Crear las variables en la clase `MainActivity`, inicializar dichas variables donde corresponde.
 
