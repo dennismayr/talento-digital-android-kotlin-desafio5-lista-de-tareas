@@ -28,10 +28,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility kotlin_version
-        targetCompatibility kotlin_version
-    }
 
 }
 
@@ -49,7 +45,7 @@ dependencies {
     testImplementation "androidx.room:room-testing:2.2.5"
 
     // Material Design libraries
-    api 'com.google.android.material:material:1.1.0'
+    api 'com.google.android.material:material:1.2.0'
 
     // Room ORM library
     implementation "androidx.room:room-runtime:2.2.5"
