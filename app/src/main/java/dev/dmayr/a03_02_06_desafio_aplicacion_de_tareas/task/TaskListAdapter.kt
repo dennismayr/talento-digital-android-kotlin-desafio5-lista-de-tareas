@@ -15,7 +15,7 @@ class TaskListAdapter(
 
   override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
     val data: TaskUIDataHolder = tasksList[position]
-    holder.taskText.text = data.text
+    holder.taskText.text = data.tarea_nombre
     holder.taskText.setOnClickListener {
       listener.onItemClick(data)
     }

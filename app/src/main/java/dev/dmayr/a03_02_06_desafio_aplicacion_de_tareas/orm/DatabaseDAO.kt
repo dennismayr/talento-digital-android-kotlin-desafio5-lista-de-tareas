@@ -8,14 +8,15 @@ import androidx.room.Update
 @Dao
 interface DatabaseDAO {
 
-  @Query("SELECT * from lista_tareas order by completado desc")
-  fun getTodosItemsLista(): List<ListaTareas>
+  // @Query("SELECT * from lista_tareas ORDER BY tarea_fecha DESC")
+  @Query("SELECT * from lista_tareas")
+  fun getTodosItemsLista(): List<DatabaseEntity>
 
   @Insert
-  fun insertItem(listaTareas: ListaTareas) // por hacer: suspend fun() Coroutine en lugar de AsyncTask
+  fun insertItem(tarea: List<DatabaseEntity>)
 
   @Update
-  fun updateItem(listaTareas: ListaTareas) // por hacer: suspend fun()Coroutine en lugar de AsyncTask
+  fun updateItem(tarea: List<DatabaseEntity>)
 
   @Query("DELETE FROM lista_tareas")
   fun deleteAll()
