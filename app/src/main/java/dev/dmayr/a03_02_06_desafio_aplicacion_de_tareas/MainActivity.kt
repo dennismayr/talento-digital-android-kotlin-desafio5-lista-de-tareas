@@ -4,16 +4,20 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.textfield.TextInputEditText
+import dev.dmayr.a03_02_06_desafio_aplicacion_de_tareas.orm.DatabaseEntity
 import dev.dmayr.a03_02_06_desafio_aplicacion_de_tareas.task.OnItemClickListener
 import dev.dmayr.a03_02_06_desafio_aplicacion_de_tareas.task.TaskListAdapter
 import dev.dmayr.a03_02_06_desafio_aplicacion_de_tareas.task.TaskUIDataHolder
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.add_task.view.*
+import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -22,14 +26,18 @@ import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity(), OnItemClickListener {
 
-  private val job = Job()
-  private val coroutineContextElement = CoroutineScope(Dispatchers.Main + job)
+  private lateinit var list: RecyclerView
+  private lateinit var adapter: TaskListAdapter
+  // crear las variables para utilizar la base de datos
+
+  private val job: CompletableJob = Job()
+  private val coroutineContextElement: CoroutineScope = CoroutineScope(Dispatchers.Main + job)
 
   override fun onItemClick(taskItem: TaskUIDataHolder) {
-    val dialogView = layoutInflater.inflate(R.layout.add_task, null)
-    val taskText = dialogView.task_input
+    val dialogView: View = layoutInflater.inflate(R.layout.add_task, null)
+    val taskText: TextInputEditText = dialogView.task_input
     taskText.setText(taskItem.text)
-    val dialogBuilder = AlertDialog
+    val dialogBuilder: AlertDialog.Builder = AlertDialog
       .Builder(this)
       .setTitle("Editar una Tarea")
       .setView(dialogView)
@@ -39,10 +47,6 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
       }
     dialogBuilder.create().show()
   }
-
-  private lateinit var list: RecyclerView
-  private lateinit var adapter: TaskListAdapter
-  // crear las variables para utilizar la base de datos
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -89,6 +93,8 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
 
   private fun updateEntity(taskItem: TaskUIDataHolder, newText: String) {
     //completar método para actualizar una tarea en la base de datos
+
+    //
   }
 
   private fun addTask() {
@@ -102,6 +108,8 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
       .setPositiveButton("Agregar") { dialog: DialogInterface, _: Int ->
         if (taskText.text?.isNotEmpty()!!) {
           //Completar para agregar una tarea a la base de datos
+
+          //
         }
       }
     dialogBuilder.create().show()
@@ -119,14 +127,31 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     dialog.show()
   }
 
-  private fun createEntity(text: String) {
+  private fun createEntity(text: String): List<DatabaseEntity> {
     //completar este método para retornar un Entity
+    val createEntity: MutableList<DatabaseEntity> = mutableListOf()
+    createEntity.add(
+      DatabaseEntity(
+        tarea = text
+      )
+    )
+    return createEntity
   }
 
-  private fun createEntityListFromDatabase(/* párametro de entrada*/): MutableList<TaskUIDataHolder> {
-    val dataList = mutableListOf<TaskUIDataHolder>()
+  private fun createEntityListFromDatabase(entities: List<DatabaseEntity>): MutableList<TaskUIDataHolder> {
+    val dataList: MutableList<TaskUIDataHolder> = mutableListOf()
     //completar método para crear una lista de datos compatibles con el adaptador, mire lo que
     //retorna el método. Este método debe recibir un parámetro también.
+    if (entities.isNotEmpty()) {
+      for (entity in entities) {
+        val tarea = entity.tarea
+        val dataView = TaskUIDataHolder(
+          entity.id,
+          entity.tarea
+        )
+        dataList.add(dataView)
+      }
+    }
     return dataList
   }
 }
