@@ -1,6 +1,7 @@
 package dev.dmayr.a03_02_06_desafio_aplicacion_de_tareas
 
 import android.content.DialogInterface
+import android.os.AsyncTask
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -17,14 +18,11 @@ import dev.dmayr.a03_02_06_desafio_aplicacion_de_tareas.orm.TareasDatabase
 import dev.dmayr.a03_02_06_desafio_aplicacion_de_tareas.task.OnItemClickListener
 import dev.dmayr.a03_02_06_desafio_aplicacion_de_tareas.task.TaskListAdapter
 import dev.dmayr.a03_02_06_desafio_aplicacion_de_tareas.task.TaskUIDataHolder
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.add_task.view.*
 import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity(), OnItemClickListener {
 
@@ -51,7 +49,10 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
       .setPositiveButton("Editar") { _: DialogInterface, _: Int ->
         //generar código para editar/actualizar la tarea
         if (taskText.text!!.isNotEmpty()) {
-          dao.modificarTarea(updateEntity(taskText.text.toString()))
+          // dao.agregarTarea(createEntity(taskText.text.toString()))
+          AsyncTask.execute {
+            dao.modificarTarea(updateEntity(taskItem, taskItem.text))
+          }
         }
         //
       }
@@ -69,14 +70,15 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
       .setPositiveButton("Agregar") { dialog: DialogInterface, _: Int ->
         if (taskText.text?.isNotEmpty()!!) {
           //Completar para agregar una tarea a la base de datos
-          dao.agregarTarea(createEntity(taskText.text.toString()))
-          val newItems =
-            createEntityListFromDatabase(dao.listarTareasTodas())
-          runOnUiThread {
-            adapter.updateData(newItems)
-            dialog.dismiss()
+          AsyncTask.execute {
+            dao.agregarTarea(createEntity(taskText.text.toString()))
+            val newItems =
+              createEntityListFromDatabase(dao.listarTareasTodas())
+            runOnUiThread {
+              adapter.updateData(newItems)
+              dialog.dismiss()
+            }
           }
-          //
         }
       }
     dialogBuilder.create().show()
@@ -87,20 +89,19 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     setContentView(R.layout.activity_main)
     val toolbar = findViewById<Toolbar>(R.id.toolbar)
     setSupportActionBar(toolbar)
-    setUpViews()
     //inicializar lo necesario para usar la base de datos
-
+    dataBase = TareasApp.tareasDatabase!!
+    dao = dataBase.databaseDAO()
     //
+    setUpViews()
   }
 
   override fun onResume() {
     super.onResume()
-    coroutineContextElement.launch {
-      withContext(Dispatchers.IO) {
-        val newItems = mutableListOf<TaskUIDataHolder>()
-        runOnUiThread {
-          adapter.updateData(newItems)
-        }
+    AsyncTask.execute {
+      val newItems = mutableListOf<TaskUIDataHolder>()
+      runOnUiThread {
+        adapter.updateData(newItems)
       }
     }
   }
@@ -121,7 +122,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
   }
 
   private fun setUpViews() {
-    list = task_list
+    list = findViewById(R.id.task_list)
     list.layoutManager = LinearLayoutManager(this)
     adapter = TaskListAdapter(mutableListOf(), this, this)
     list.adapter = adapter
@@ -135,19 +136,19 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
       .setNegativeButton("Cerrar") { dialog: DialogInterface, _: Int -> dialog.dismiss() }
       .setPositiveButton("Aceptar") { dialog: DialogInterface, _: Int ->
         //Código para eliminar las tareas de la base de datos
-        coroutineContextElement.launch {
-          withContext(Dispatchers.IO) {
+        AsyncTask.execute {
+          dao.deleteAll()
+          adapter.updateData(emptyList())
 
-            dao.deleteAll()
-            adapter.updateData(emptyList())
-
-          }
         }
       }
     dialog.show()
   }
 
-  private fun updateEntity(taskItem: TaskUIDataHolder, newText: String): List<DatabaseEntity> {
+  private fun updateEntity(
+    taskItem: TaskUIDataHolder,
+    newText: String
+  ): MutableList<DatabaseEntity> {
     //completar método para actualizar una tarea en la base de datos
     val updateEntity: MutableList<DatabaseEntity> = mutableListOf()
     if (updateEntity.isNotEmpty()) {
@@ -162,7 +163,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     //
   }
 
-  private fun createEntity(text: String): List<DatabaseEntity> {
+  private fun createEntity(text: String): MutableList<DatabaseEntity> {
     //completar este método para retornar un Entity
     val createEntity: MutableList<DatabaseEntity> = mutableListOf()
     createEntity.add(
@@ -179,7 +180,6 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     //retorna el método. Este método debe recibir un parámetro también.
     if (entities.isNotEmpty()) {
       for (entity in entities) {
-        val tarea = entity.tarea
         val dataView = TaskUIDataHolder(
           entity.id,
           entity.tarea

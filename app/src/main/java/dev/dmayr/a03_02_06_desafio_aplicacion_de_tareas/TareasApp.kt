@@ -8,7 +8,7 @@ import dev.dmayr.a03_02_06_desafio_aplicacion_de_tareas.orm.TareasDatabase
 
 class TareasApp : Application() {
   companion object {
-    var tareasDatabase: TareasDatabase? = null
+    internal var tareasDatabase: TareasDatabase? = null
   }
 
   val MIGRATION_1_2: Migration = object : Migration(1, 2) {

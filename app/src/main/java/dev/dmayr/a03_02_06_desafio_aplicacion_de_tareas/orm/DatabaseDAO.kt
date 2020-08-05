@@ -9,14 +9,14 @@ import androidx.room.Update
 @Dao
 interface DatabaseDAO {
   @Query("SELECT * FROM lista_tareas")
-  suspend fun listarTareasTodas(): List<DatabaseEntity>
+  fun listarTareasTodas(): MutableList<DatabaseEntity>
 
   @Insert
-  suspend fun agregarTarea(tarea: List<DatabaseEntity>)
+  fun agregarTarea(tarea: MutableList<DatabaseEntity>)
 
   @Update(onConflict = REPLACE)
-  suspend fun modificarTarea(tarea: List<DatabaseEntity>)
+  fun modificarTarea(tarea: MutableList<DatabaseEntity>)
 
   @Query("DELETE FROM lista_tareas")
-  suspend fun deleteAll()
+  fun deleteAll()
 }
